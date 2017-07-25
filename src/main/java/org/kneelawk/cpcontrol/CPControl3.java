@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class CPControl3 {
 	protected ErrorCallback errorCallback = DEFAULT_ERROR_CALLBACK;
 
 	public CPControl3(String mainClassName) {
-		this(mainClassName, PARENT);
+		this(mainClassName, createBaseDir());
 	}
 
 	public CPControl3(String mainClassName, File baseDir) {
@@ -61,6 +62,10 @@ public class CPControl3 {
 		});
 
 		Runtime.getRuntime().addShutdownHook(hook);
+	}
+
+	public File getBaseDir() {
+		return baseDir;
 	}
 
 	public void addOperation(DependencyOperation operation) {
@@ -139,8 +144,7 @@ public class CPControl3 {
 		@Override
 		public boolean accept(File file) {
 			String name = file.getName().toLowerCase();
-			return name.endsWith(".so") || name.endsWith(".dll") || name.endsWith(".jnilib")
-					|| name.endsWith(".dylib");
+			return name.endsWith(".so") || name.endsWith(".dll") || name.endsWith(".jnilib") || name.endsWith(".dylib");
 		}
 	};
 
@@ -675,6 +679,14 @@ public class CPControl3 {
 
 		public FileFilter getToSearch() {
 			return toSearch;
+		}
+	}
+
+	public static File createBaseDir() {
+		try {
+			return Files.createTempDirectory(ME.getName()).toFile();
+		} catch (IOException e) {
+			return PARENT;
 		}
 	}
 
