@@ -34,7 +34,7 @@ public class NativeExtractFromFileOperation implements DependencyOperation {
 		Set<File> extracted = CPControl4.extractFilesMatching(file, handler, handler);
 
 		for (File f : extracted) {
-			cp.nativeDirs.add(f.getParentFile().getCanonicalPath());
+			cp.getNativeDirs().add(f.getParentFile().getCanonicalPath());
 		}
 	}
 }

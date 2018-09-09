@@ -6,8 +6,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ClassPath {
-	public Set<File> classpath = new HashSet<>();
-	public Set<String> nativeDirs = new HashSet<>();
+	private Set<File> classpath = new HashSet<>();
+	private Set<String> nativeDirs = new HashSet<>();
+
+	public ClassPath() {
+	}
+
+	public ClassPath(Set<File> classpath, Set<String> nativeDirs) {
+		super();
+		this.classpath = classpath;
+		this.nativeDirs = nativeDirs;
+	}
+
+	public Set<File> getClasspath() {
+		return classpath;
+	}
+
+	public Set<String> getNativeDirs() {
+		return nativeDirs;
+	}
 
 	public void addLibrary(File lib) {
 		classpath.add(lib);

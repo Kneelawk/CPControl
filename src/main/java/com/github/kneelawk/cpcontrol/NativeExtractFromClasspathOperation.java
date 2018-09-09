@@ -32,7 +32,7 @@ public class NativeExtractFromClasspathOperation implements DependencyOperation 
 
 		Set<File> libs = new HashSet<>();
 		libs.addAll(CPControl4.getLibrariesOnClasspath());
-		libs.addAll(cp.classpath);
+		libs.addAll(cp.getClasspath());
 
 		final Map<File, List<ExtractFromCollectionDescription>> whoWantsWhat = new HashMap<>();
 
@@ -53,12 +53,11 @@ public class NativeExtractFromClasspathOperation implements DependencyOperation 
 		}
 
 		for (final File lib : libs) {
-			OwnedObjectExtractionHandler handler = new OwnedObjectExtractionHandler(nativesDir,
-					whoWantsWhat.get(lib));
+			OwnedObjectExtractionHandler handler = new OwnedObjectExtractionHandler(nativesDir, whoWantsWhat.get(lib));
 			Set<File> extracted = CPControl4.extractFilesMatching(lib, handler, handler);
 
 			for (File f : extracted) {
-				cp.nativeDirs.add(f.getParentFile().getCanonicalPath());
+				cp.getNativeDirs().add(f.getParentFile().getCanonicalPath());
 			}
 		}
 	}

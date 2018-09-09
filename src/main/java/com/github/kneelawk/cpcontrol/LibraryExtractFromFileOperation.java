@@ -33,6 +33,6 @@ public class LibraryExtractFromFileOperation implements DependencyOperation {
 
 		Set<File> extracted = CPControl4.extractFilesMatching(file, handler, handler);
 
-		cp.classpath.addAll(extracted);
+		cp.getClasspath().addAll(extracted);
 	}
 }

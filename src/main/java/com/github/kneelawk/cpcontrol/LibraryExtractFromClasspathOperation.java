@@ -19,8 +19,8 @@ public class LibraryExtractFromClasspathOperation implements DependencyOperation
 		return this;
 	}
 
-	public LibraryExtractFromClasspathOperation addLibrary(String dirName, FileFilter toSearch,
-			EntryFilter searchFor, ResourceDeletionPolicy deletionPolicy) {
+	public LibraryExtractFromClasspathOperation addLibrary(String dirName, FileFilter toSearch, EntryFilter searchFor,
+			ResourceDeletionPolicy deletionPolicy) {
 		addLibrary(new ExtractFromClasspathDescription(dirName, toSearch, searchFor, deletionPolicy));
 		return this;
 	}
@@ -33,7 +33,7 @@ public class LibraryExtractFromClasspathOperation implements DependencyOperation
 
 		Set<File> libs = new HashSet<>();
 		libs.addAll(CPControl4.getLibrariesOnClasspath());
-		libs.addAll(cp.classpath);
+		libs.addAll(cp.getClasspath());
 
 		final Map<File, List<ExtractFromCollectionDescription>> whoWantsWhat = new HashMap<>();
 
@@ -57,7 +57,7 @@ public class LibraryExtractFromClasspathOperation implements DependencyOperation
 			OwnedObjectExtractionHandler handler = new OwnedObjectExtractionHandler(libsDir, whoWantsWhat.get(lib));
 			Set<File> extracted = CPControl4.extractFilesMatching(lib, handler, handler);
 
-			cp.classpath.addAll(extracted);
+			cp.getClasspath().addAll(extracted);
 		}
 	}
 }

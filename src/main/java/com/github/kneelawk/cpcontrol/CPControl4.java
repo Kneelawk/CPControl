@@ -111,11 +111,11 @@ public class CPControl4 {
 			operation.perform(path, baseDir);
 		}
 
-		for (String dir : path.nativeDirs) {
+		for (String dir : path.getNativeDirs()) {
 			addNativesDir(dir);
 		}
 
-		URL[] urls = copyFilesToClassPath(path.classpath);
+		URL[] urls = copyFilesToClassPath(path.getClasspath());
 		loader = new URLClassLoader(urls);
 
 		Launcher launcher = new Launcher(loader, mainClassName, args, errorCallback);
