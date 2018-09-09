@@ -1,0 +1,4 @@
+Goals:
+ - Distributed through maven instead of using git submodules
+ - Having some documentation
+ - Chain-loading
