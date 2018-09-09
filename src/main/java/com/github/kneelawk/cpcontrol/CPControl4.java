@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -301,7 +300,7 @@ public class CPControl4 {
 		Set<File> extractedFiles = new HashSet<>();
 
 		if (archive.isDirectory()) {
-			extractFilesMatchingFromDirectory(archive, new HashSet<>(), extractedFiles, archive.toURI(), filter, destinations);
+			extractFilesMatchingFromDirectory(archive, new HashSet<>(), extractedFiles, "/", filter, destinations);
 		} else {
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(archive));
 			ZipEntry entry;
@@ -333,19 +332,20 @@ public class CPControl4 {
 	}
 
 	private static void extractFilesMatchingFromDirectory(File dir, Set<File> visited, Collection<File> extracted,
-			URI base, EntryFilter filter, DestinationProvider prov) throws IOException {
+			String path, EntryFilter filter, DestinationProvider prov) throws IOException {
 		if (visited.contains(dir))
 			return;
 		visited.add(dir);
 		if (dir.isDirectory()) {
 			File[] children = dir.listFiles();
 			for (File child : children) {
-				URI path = base.relativize(child.toURI());
+				path += child.getName();
 				if (child.isDirectory()) {
-					extractFilesMatchingFromDirectory(child, visited, extracted, base, filter, prov);
+					path += "/";
+					extractFilesMatchingFromDirectory(child, visited, extracted, path, filter, prov);
 				} else {
 					File to;
-					if (filter.accept(path.getPath()) && (to = prov.getFile(path.getPath())) != null) {
+					if (filter.accept(path) && (to = prov.getFile(path)) != null) {
 						FileInputStream fis = new FileInputStream(child);
 						FileOutputStream fos = new FileOutputStream(to);
 
@@ -358,8 +358,7 @@ public class CPControl4 {
 			}
 		} else {
 			File to = null;
-			URI path = base.relativize(dir.toURI());
-			if (filter.accept(path.getPath()) && (to = prov.getFile(path.getPath())) != null) {
+			if (filter.accept(path) && (to = prov.getFile(path)) != null) {
 				FileInputStream fis = new FileInputStream(dir);
 				FileOutputStream fos = new FileOutputStream(to);
 
