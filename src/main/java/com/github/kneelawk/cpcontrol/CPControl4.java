@@ -29,7 +29,7 @@ import java.util.zip.ZipInputStream;
  * Sorry about the mess. This should be an entire library or at least a package,
  * but is stuffed into one class for ease of copy-and-paste.
  */
-public class CPControl3 {
+public class CPControl4 {
 	protected File baseDir;
 	protected String mainClassName;
 
@@ -39,11 +39,11 @@ public class CPControl3 {
 
 	protected ErrorCallback errorCallback = DEFAULT_ERROR_CALLBACK;
 
-	public CPControl3(String mainClassName) {
+	public CPControl4(String mainClassName) {
 		this(mainClassName, createBaseDir());
 	}
 
-	public CPControl3(String mainClassName, File baseDir) {
+	public CPControl4(String mainClassName, File baseDir) {
 		this.mainClassName = mainClassName;
 		this.baseDir = baseDir;
 
@@ -130,7 +130,7 @@ public class CPControl3 {
 	public static final String NATIVES_DIR_NAME = "natives";
 
 	public static final File ME = new File(
-			CPControl3.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			CPControl4.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	public static final File PARENT = ME.getParentFile();
 
 	public static final FileFilter IS_JAR_FILE = new FileFilter() {
@@ -863,7 +863,7 @@ public class CPControl3 {
 	}
 
 	public static void extractFileFromSystemClasspath(String path, File to) throws IOException {
-		extractFileFromSystemClasspath(CPControl3.class, path, to);
+		extractFileFromSystemClasspath(CPControl4.class, path, to);
 	}
 
 	public static void extractFileFromSystemClasspath(Class<?> relative, String path, File to) throws IOException {
