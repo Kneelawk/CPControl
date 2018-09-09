@@ -13,6 +13,6 @@ public class DirectoryDestinationProvider implements DestinationProvider {
 
 	@Override
 	public File getFile(String path) {
-		return CPControl4.inactResourceDeletionPolicy(new File(parent, path), policy);
+		return CPControl4.enactResourceDeletionPolicy(new File(parent, path), policy);
 	}
 }

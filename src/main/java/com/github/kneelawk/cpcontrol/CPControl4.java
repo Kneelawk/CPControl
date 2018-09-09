@@ -202,7 +202,7 @@ public class CPControl4 {
 		return path.substring(path.lastIndexOf('/') + 1);
 	}
 
-	public static File inactResourceDeletionPolicy(File resource, ResourceDeletionPolicy policy) {
+	public static File enactResourceDeletionPolicy(File resource, ResourceDeletionPolicy policy) {
 		if (policy.shouldDeleteOnExit(resource))
 			resource.deleteOnExit();
 		return resource;

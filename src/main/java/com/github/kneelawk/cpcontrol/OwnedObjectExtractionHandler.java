@@ -27,7 +27,7 @@ public class OwnedObjectExtractionHandler implements EntryFilter, DestinationPro
 		File dir = new File(baseDir, desc.getDirName());
 		if (!dir.exists())
 			dir.mkdir();
-		return CPControl4.inactResourceDeletionPolicy(new File(dir, CPControl4.getPathName(path)), desc.getDeletionPolicy());
+		return CPControl4.enactResourceDeletionPolicy(new File(dir, CPControl4.getPathName(path)), desc.getDeletionPolicy());
 	}
 
 	@Override
