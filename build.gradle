@@ -1,0 +1,17 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'maven-publish'
+}
+
+sourceCompatibility = 1.8
+
+group = "com.github.kneelawk"
+version = "4.0.0"
+
+repositories {
+	jcenter()
+}
+
+dependencies {
+}
