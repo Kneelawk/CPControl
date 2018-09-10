@@ -21,24 +21,62 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * CPControl v3.1.2<br>
- * Sorry about the mess. This should be an entire library or at least a package,
- * but is stuffed into one class for ease of copy-and-paste.
+ * CPControl v4.0.0<br>
+ * This is an almost monolithic utility that allows a launcher application to
+ * load a target application with all its dependencies.
+ * 
+ * @author Kneelawk
+ *
  */
 public class CPControl4 {
+	/**
+	 * The file in which to store the extracted resources.
+	 */
 	protected File baseDir;
+	/**
+	 * The fully qualified class name of the main class of the target application.
+	 */
 	protected String mainClassName;
 
+	/**
+	 * A list of every {@link DependencyOperation} to be performed before the target
+	 * application launches.
+	 */
 	protected List<DependencyOperation> operations = new ArrayList<>();
 
+	/**
+	 * The class loader used as the context class loader for the application thread.
+	 */
 	protected URLClassLoader loader;
 
+	/**
+	 * The {@link ErrorCallback} to be used.
+	 */
 	protected ErrorCallback errorCallback = DEFAULT_ERROR_CALLBACK;
 
+	/**
+	 * Creates a {@link CPControl4} with the fully qualified class name of the
+	 * target application's main class.
+	 * 
+	 * @param mainClassName
+	 *            the fully qualified class name of the target application's main
+	 *            class.
+	 */
 	public CPControl4(String mainClassName) {
 		this(mainClassName, createBaseDir());
 	}
 
+	/**
+	 * Creates a {@link CPControl4} with the fully qualified class name of the
+	 * target application's main class and with a custom directory for storing
+	 * resource files.
+	 * 
+	 * @param mainClassName
+	 *            the fully qualified class name of the target application's main
+	 *            class
+	 * @param baseDir
+	 *            the directory for storing resource files
+	 */
 	public CPControl4(String mainClassName, File baseDir) {
 		this.mainClassName = mainClassName;
 		this.baseDir = baseDir;
@@ -60,50 +98,130 @@ public class CPControl4 {
 		Runtime.getRuntime().addShutdownHook(hook);
 	}
 
+	/**
+	 * Gets the directory that all the resources are copied into.
+	 * 
+	 * @return the directory that all the resources are copied into
+	 */
 	public File getBaseDir() {
 		return baseDir;
 	}
 
+	/**
+	 * Adds a custom {@link DependencyOperation} to the list of operations.
+	 * 
+	 * @param operation
+	 *            the {@link DependencyOperation} to be added
+	 */
 	public void addOperation(DependencyOperation operation) {
 		operations.add(operation);
 	}
 
+	/**
+	 * Adds an operation that adds a file to the list of libraries on the classpath.
+	 * 
+	 * @param library
+	 *            the library file to be added to the classpath
+	 */
 	public void addLibrary(File library) {
 		operations.add(new LibraryAddOperation(library));
 	}
 
+	/**
+	 * Adds an operation that adds a directory to the list of directories containing
+	 * natives.
+	 * 
+	 * @param nativeDir
+	 *            the directory to be added to the list of directories containing
+	 *            natives
+	 */
 	public void addNativeDir(File nativeDir) {
 		operations.add(new NativeAddOperation(nativeDir));
 	}
 
+	/**
+	 * Creates a {@link LibraryExtractFromClasspathOperation}, adds it to the list
+	 * of operations, and returns it to be configured.
+	 * 
+	 * @return the {@link LibraryExtractFromClasspathOperation} to be configured
+	 */
 	public LibraryExtractFromClasspathOperation addExtractingFromClasspathLibrary() {
 		LibraryExtractFromClasspathOperation operation = new LibraryExtractFromClasspathOperation();
 		operations.add(operation);
 		return operation;
 	}
 
+	/**
+	 * Creates a {@link NativeExtractFromClasspathOperation}, adds it to the list of
+	 * operations, and returns it to be configured.
+	 * 
+	 * @return the {@link NativeExtractFromClasspathOperation} to be configured
+	 */
 	public NativeExtractFromClasspathOperation addExtractingFromClasspathNativeDir() {
 		NativeExtractFromClasspathOperation operation = new NativeExtractFromClasspathOperation();
 		operations.add(operation);
 		return operation;
 	}
 
+	/**
+	 * Creates a {@link LibraryExtractFromFileOperation}, adds it to the list of
+	 * operations, and returns it to be configured.
+	 * 
+	 * @param file
+	 *            the file that the {@link LibraryExtractFromFileOperation} extracts
+	 *            from
+	 * @return the {@link LibraryExtractFromFileOperation} to be configured
+	 */
 	public LibraryExtractFromFileOperation addExtractingFromFileLibrary(File file) {
 		LibraryExtractFromFileOperation operation = new LibraryExtractFromFileOperation(file);
 		operations.add(operation);
 		return operation;
 	}
 
+	/**
+	 * Creates a {@link NativeExtractFromFileOperation}, adds it to the list of
+	 * operations, and returns it to be configured.
+	 * 
+	 * @param file
+	 *            the file that the {@link NativeExtractFromFileOperation} extracts
+	 *            from
+	 * @return the {@link NativeExtractFromFileOperation} to be configured
+	 */
 	public NativeExtractFromFileOperation addExtractingFromFileNativeDir(File file) {
 		NativeExtractFromFileOperation operation = new NativeExtractFromFileOperation(file);
 		operations.add(operation);
 		return operation;
 	}
 
+	/**
+	 * Sets the {@link CPControl4}'s error callback to something other than the
+	 * default.
+	 * 
+	 * @param callback
+	 *            the new {@link ErrorCallback} to set.
+	 */
 	public void setErrorCallback(ErrorCallback callback) {
 		errorCallback = callback;
 	}
 
+	/**
+	 * Start the target application. Every {@link DependencyOperation} is performed
+	 * in the order they were added, and the {@link ClassPath} object resulting from
+	 * the compiled operations of each {@link DependencyOperation} is applied to the
+	 * environment. Each of the {@link ClassPath} object's native directories are
+	 * added to the {@link ClassLoader}'s list of directories containing natives.
+	 * Then a thread is started with a {@link URLClassLoader} as its context class
+	 * loader, constructed from all the libraries in the {@link ClassPath} object.
+	 * 
+	 * @param args
+	 *            the main arguments to be supplied to the target application
+	 * @throws IOException
+	 *             if there is an error setting up the target application to be
+	 *             launched
+	 * @throws InterruptedException
+	 *             if this thread receives an interrupt while waiting for the target
+	 *             application to finish
+	 */
 	public void launch(String[] args) throws IOException, InterruptedException {
 		ClassPath path = new ClassPath();
 
@@ -122,13 +240,29 @@ public class CPControl4 {
 		launcher.start();
 	}
 
+	/**
+	 * The name of the directory in which to store the libraries.
+	 */
 	public static final String LIBS_DIR_NAME = "libs";
+	/**
+	 * The name of the directory in which to store the natives.
+	 */
 	public static final String NATIVES_DIR_NAME = "natives";
 
+	/**
+	 * A file pointing to the archive that contains this class.
+	 */
 	public static final File ME = new File(
 			CPControl4.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	/**
+	 * A file pointing to the parent directory of the archive that contains this
+	 * class.
+	 */
 	public static final File PARENT = ME.getParentFile();
 
+	/**
+	 * A {@link FileFilter} for testing if a file is a jar file.
+	 */
 	public static final FileFilter IS_JAR_FILE = new FileFilter() {
 		@Override
 		public boolean accept(File pathname) {
@@ -136,6 +270,9 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * A {@link FileFilter} for testing if a file is a native file.
+	 */
 	public static final FileFilter IS_NATIVE_FILE = new FileFilter() {
 		@Override
 		public boolean accept(File file) {
@@ -144,6 +281,10 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * A {@link FileFilter} for testing if a file is the archive this class is
+	 * stored in.
+	 */
 	public static final FileFilter IS_ME = new FileFilter() {
 		@Override
 		public boolean accept(File file) throws IOException {
@@ -151,6 +292,9 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * An {@link EntryFilter} for testing if a path string describes a jar entry.
+	 */
 	public static final EntryFilter IS_JAR_ENTRY = new EntryFilter() {
 		@Override
 		public boolean accept(String path) throws IOException {
@@ -158,6 +302,9 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * An {@link EntryFilter} for testing if a path string describes a native entry.
+	 */
 	public static final EntryFilter IS_NATIVE_ENTRY = new EntryFilter() {
 		@Override
 		public boolean accept(String path) throws IOException {
@@ -167,6 +314,10 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * A {@link ResourceDeletionPolicy} that deletes every file when the application
+	 * exits.
+	 */
 	public static final ResourceDeletionPolicy ALWAYS_DELETE = new ResourceDeletionPolicy() {
 		@Override
 		public boolean shouldDeleteOnExit(File resource) {
@@ -174,6 +325,10 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * A {@link ResourceDeletionPolicy} that does not delete any file when the
+	 * application exits.
+	 */
 	public static final ResourceDeletionPolicy NEVER_DELETE = new ResourceDeletionPolicy() {
 		@Override
 		public boolean shouldDeleteOnExit(File resource) {
@@ -181,6 +336,10 @@ public class CPControl4 {
 		}
 	};
 
+	/**
+	 * An {@link ErrorCallback} that simply prints a stack trace when an error
+	 * occurs.
+	 */
 	public static final ErrorCallback DEFAULT_ERROR_CALLBACK = new ErrorCallback() {
 		@Override
 		public void error(Throwable t) {
@@ -190,6 +349,11 @@ public class CPControl4 {
 
 	private static Set<File> librariesOnClasspath;
 
+	/**
+	 * Creates a temporary directory based on the file containing this class's name.
+	 * 
+	 * @return the temporary directory for storing resource files
+	 */
 	public static File createBaseDir() {
 		try {
 			return Files.createTempDirectory(ME.getName()).toFile();
@@ -198,16 +362,40 @@ public class CPControl4 {
 		}
 	}
 
+	/**
+	 * Finds the filename associated with the path string.
+	 * 
+	 * @param path
+	 *            the path string to find the filename of
+	 * @return the filename of the path string
+	 */
 	public static String getPathName(String path) {
 		return path.substring(path.lastIndexOf('/') + 1);
 	}
 
+	/**
+	 * If the supplied {@link ResourceDeletionPolicy} determines the file should be
+	 * deleted on exit, this method flags that file for deletion on exit.
+	 * 
+	 * @param resource
+	 *            the file on which the {@link ResourceDeletionPolicy} is enacted
+	 *            upon
+	 * @param policy
+	 *            the policy used to determine whether the resource file should be
+	 *            deleted on exit
+	 * @return the resource file
+	 */
 	public static File enactResourceDeletionPolicy(File resource, ResourceDeletionPolicy policy) {
 		if (policy.shouldDeleteOnExit(resource))
 			resource.deleteOnExit();
 		return resource;
 	}
 
+	/**
+	 * Generates an array of all the classpath entries.
+	 * 
+	 * @return an array of all the classpath entries.
+	 */
 	public static String[] getClassPath() {
 		String classPath = System.getProperty("sun.boot.class.path") + File.pathSeparator
 				+ System.getProperty("java.ext.path") + File.pathSeparator + System.getProperty("java.class.path");
@@ -227,10 +415,25 @@ public class CPControl4 {
 		return found;
 	}
 
+	/**
+	 * Forces recreation of the list of all the jar files on the classpath.
+	 * 
+	 * @return the newly created list of all the jars on the classpath
+	 * @throws IOException
+	 *             if there is an error finding the jars
+	 */
 	public static Set<File> recalculateLibrariesOnClasspath() throws IOException {
 		return librariesOnClasspath = findLibrariesOnClasspath();
 	}
 
+	/**
+	 * Returns a list of all the jars on the classpath. Creates the list if it is
+	 * empty.
+	 * 
+	 * @return a set of all the jar files on the classpath
+	 * @throws IOException
+	 *             if there is an error while finding the jars
+	 */
 	public static Set<File> getLibrariesOnClasspath() throws IOException {
 		if (librariesOnClasspath == null) {
 			librariesOnClasspath = findLibrariesOnClasspath();
@@ -261,6 +464,17 @@ public class CPControl4 {
 		}
 	}
 
+	/**
+	 * Filters a collection of files based on a {@link FileFilter}.
+	 * 
+	 * @param files
+	 *            the collection of files to be filtered
+	 * @param filter
+	 *            only files accepted by this filter are in the returned set
+	 * @return a set of filtered files
+	 * @throws IOException
+	 *             if there is an error while filtering
+	 */
 	public static Set<File> filterFiles(Collection<File> files, FileFilter filter) throws IOException {
 		Set<File> filteredFiles = new HashSet<>();
 
@@ -273,6 +487,15 @@ public class CPControl4 {
 		return filteredFiles;
 	}
 
+	/**
+	 * Converts a Collection of files into an array of path URLs.
+	 * 
+	 * @param files
+	 *            the collection of files to be converted
+	 * @return the array of converted path urls
+	 * @throws MalformedURLException
+	 *             if there are invalid file paths being converted
+	 */
 	public static URL[] copyFilesToClassPath(Collection<File> files) throws MalformedURLException {
 		int size = files.size();
 		URL[] urls = new URL[size];
@@ -286,6 +509,20 @@ public class CPControl4 {
 		return urls;
 	}
 
+	/**
+	 * Extracts all files accepted by the {@link EntryFilter} to locations provided
+	 * by the {@link DestinationProvider}.
+	 * 
+	 * @param archives
+	 *            a collection of archives to extract resources from
+	 * @param filter
+	 *            only extracts resources accepted by this filter
+	 * @param destinations
+	 *            provides destination locations for each extracted resource
+	 * @return the set of all resource files extracted
+	 * @throws IOException
+	 *             if there is an error while extracting
+	 */
 	public static Set<File> extractFilesMatching(Collection<File> archives, EntryFilter filter,
 			DestinationProvider destinations) throws IOException {
 		Set<File> extractedFiles = new HashSet<>();
@@ -295,6 +532,20 @@ public class CPControl4 {
 		return extractedFiles;
 	}
 
+	/**
+	 * Extracts all files accepted by the {@link EntryFilter} to locations provided
+	 * by the {@link DestinationProvider}.
+	 * 
+	 * @param archive
+	 *            the archive to extract resources from
+	 * @param filter
+	 *            only extracts resources accepted by this filter
+	 * @param destinations
+	 *            provides destination locations for each extracted resource
+	 * @return the set of all resource files extracted
+	 * @throws IOException
+	 *             if there is an error while extracting
+	 */
 	public static Set<File> extractFilesMatching(File archive, EntryFilter filter, DestinationProvider destinations)
 			throws IOException {
 		Set<File> extractedFiles = new HashSet<>();
@@ -370,10 +621,33 @@ public class CPControl4 {
 		}
 	}
 
+	/**
+	 * Gets a resource from the classpath relative to CPControl4.class and copies it
+	 * to a file.
+	 * 
+	 * @param path
+	 *            the path to the resource relative to CPControl4.class
+	 * @param to
+	 *            the file to copy the resource to
+	 * @throws IOException
+	 *             if there is a problem while copying the resource
+	 */
 	public static void extractFileFromSystemClasspath(String path, File to) throws IOException {
 		extractFileFromSystemClasspath(CPControl4.class, path, to);
 	}
 
+	/**
+	 * Gets a resource from the classpath and copies it to a file.
+	 * 
+	 * @param relative
+	 *            the class that the path is relative to
+	 * @param path
+	 *            the path to the resource
+	 * @param to
+	 *            the file to copy the resource to
+	 * @throws IOException
+	 *             if there is a problem while copying the resource
+	 */
 	public static void extractFileFromSystemClasspath(Class<?> relative, String path, File to) throws IOException {
 		InputStream is = relative.getResourceAsStream(path);
 		if (is == null)
@@ -382,6 +656,16 @@ public class CPControl4 {
 		copy(is, fos);
 	}
 
+	/**
+	 * Copies all data from an {@link InputStream} to an {@link OutputStream}.
+	 * 
+	 * @param is
+	 *            the stream to be copied from
+	 * @param os
+	 *            the stream to be copied to
+	 * @throws IOException
+	 *             if there is an error while copying
+	 */
 	public static void copy(InputStream is, OutputStream os) throws IOException {
 		byte[] buf = new byte[8192];
 		int read;
@@ -390,6 +674,14 @@ public class CPControl4 {
 		}
 	}
 
+	/**
+	 * Adds a directory to the classloader's list of directories containing natives.
+	 * 
+	 * @param dirName
+	 *            the path of the directory to be added
+	 * @throws IOException
+	 *             if there is a problem adding the directory
+	 */
 	public static void addNativesDir(String dirName) throws IOException {
 		try {
 			// This enables the java.library.path to be modified at runtime
