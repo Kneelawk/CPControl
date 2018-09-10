@@ -9,9 +9,13 @@ sourceCompatibility = 1.8
 group = "com.github.kneelawk"
 version = "4.0.0"
 
-repositories {
-	jcenter()
+publishing {
+	publications {
+		maven(MavenPublication) { from components.java }
+	}
 }
+
+repositories { jcenter() }
 
 dependencies {
 }
