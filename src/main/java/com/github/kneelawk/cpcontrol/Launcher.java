@@ -3,6 +3,12 @@ package com.github.kneelawk.cpcontrol;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Launcher - Used for invoking and managing the running target class.
+ * 
+ * @author Kneelawk
+ *
+ */
 public class Launcher {
 	protected ClassLoader loader;
 	protected String mainClass;

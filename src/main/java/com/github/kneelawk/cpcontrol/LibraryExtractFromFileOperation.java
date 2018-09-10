@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * LibraryExtractFromFileOperation - Finds a jar resource within a specific
+ * archive. Then it extracts that jar resource and adds it to the classpath.
+ * 
+ * @see DependencyOperation
+ * @author Kneelawk
+ *
+ */
 public class LibraryExtractFromFileOperation implements DependencyOperation {
 	private File file;
 	private List<ExtractDescription> descs = new ArrayList<>();

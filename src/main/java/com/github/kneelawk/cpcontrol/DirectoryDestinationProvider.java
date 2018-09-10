@@ -2,6 +2,14 @@ package com.github.kneelawk.cpcontrol;
 
 import java.io.File;
 
+/**
+ * DirectoryDestinationProvider - Provides a location for a resource by placing
+ * its path within the parent directory given on construction.
+ * 
+ * @see DestinationProvider
+ * @author Kneelawk
+ *
+ */
 public class DirectoryDestinationProvider implements DestinationProvider {
 	private File parent;
 	private ResourceDeletionPolicy policy;

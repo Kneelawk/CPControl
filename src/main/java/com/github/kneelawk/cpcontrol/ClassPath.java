@@ -5,6 +5,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * ClassPath - Used for keeping track of all the jars and native directories
+ * that are being added to the classpath.
+ * 
+ * @author Kneelawk
+ *
+ */
 public class ClassPath {
 	private Set<File> classpath = new HashSet<>();
 	private Set<String> nativeDirs = new HashSet<>();

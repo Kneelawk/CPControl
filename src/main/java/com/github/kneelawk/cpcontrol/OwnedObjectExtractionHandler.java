@@ -6,6 +6,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * OwnedObjectExtractionHandler - Serves as both an {@link EntryFilter} and a
+ * {@link DestinationProvider}, delegating resources to directories with names
+ * provided by the first {@link ExtractDescription} to provide an EntryFilter
+ * that accepts them.
+ * 
+ * @see EntryFilter
+ * @see DestinationProvider
+ * @see ExtractDescription
+ * @author Kneelawk
+ *
+ */
 public class OwnedObjectExtractionHandler implements EntryFilter, DestinationProvider {
 	private File baseDir;
 	private Collection<? extends ExtractDescription> descs;
@@ -27,7 +39,8 @@ public class OwnedObjectExtractionHandler implements EntryFilter, DestinationPro
 		File dir = new File(baseDir, desc.getDirName());
 		if (!dir.exists())
 			dir.mkdir();
-		return CPControl4.enactResourceDeletionPolicy(new File(dir, CPControl4.getPathName(path)), desc.getDeletionPolicy());
+		return CPControl4.enactResourceDeletionPolicy(new File(dir, CPControl4.getPathName(path)),
+				desc.getDeletionPolicy());
 	}
 
 	@Override

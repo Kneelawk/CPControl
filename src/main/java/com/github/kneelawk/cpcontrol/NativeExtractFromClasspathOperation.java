@@ -10,6 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * NativeExtractFromClasspathOperation - Finds a native resource within the
+ * archives on the classpath and extracts it to a location where its parent
+ * directory can be added to the list of directories containing natives.
+ * 
+ * @see DependencyOperation
+ * @author Kneelawk
+ *
+ */
 public class NativeExtractFromClasspathOperation implements DependencyOperation {
 	private List<ExtractFromCollectionDescription> descs = new ArrayList<>();
 

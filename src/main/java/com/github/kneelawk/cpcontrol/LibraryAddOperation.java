@@ -3,6 +3,13 @@ package com.github.kneelawk.cpcontrol;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * LibraryAddOperation - Simply adds a file to the classpath.
+ * 
+ * @see DependencyOperation
+ * @author Kneelawk
+ *
+ */
 public class LibraryAddOperation implements DependencyOperation {
 	private File libFile;
 

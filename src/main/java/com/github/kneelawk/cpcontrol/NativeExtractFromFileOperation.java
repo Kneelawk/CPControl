@@ -6,6 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * NativeExtractFromFileOperation - Finds a native resource within a specific
+ * archive. Then it extracts the native resource to a location where its parent
+ * directory can be added to the list of directories containing natives.
+ * 
+ * @see DependencyOperation
+ * @author Kneelawk
+ *
+ */
 public class NativeExtractFromFileOperation implements DependencyOperation {
 	private File file;
 	private List<ExtractDescription> descs = new ArrayList<>();

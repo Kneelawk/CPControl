@@ -10,6 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * LibraryExtractFromClasspathOperation - Finds a jar resource within the
+ * archives on the classpath and extracts it to a location where it itself can
+ * be added to the classpath.
+ * 
+ * @see DependencyOperation
+ * @author Kneelawk
+ *
+ */
 public class LibraryExtractFromClasspathOperation implements DependencyOperation {
 
 	private List<ExtractFromCollectionDescription> descs = new ArrayList<>();

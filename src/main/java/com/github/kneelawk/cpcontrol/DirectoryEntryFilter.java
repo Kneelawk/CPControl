@@ -2,6 +2,14 @@ package com.github.kneelawk.cpcontrol;
 
 import java.io.IOException;
 
+/**
+ * DirectoryEntryFilter - Filters entries based on if their path starts with the
+ * directory path given in the constructor.
+ * 
+ * @see EntryFilter
+ * @author Kneelawk
+ *
+ */
 public class DirectoryEntryFilter implements EntryFilter {
 	private String dir;
 
