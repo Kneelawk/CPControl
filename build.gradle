@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = '1.10'
 
 group = "com.github.kneelawk"
-version = "5.0.0-SNAPSNOT"
+version = "5.0.0-SNAPSHOT"
 javaModule.name = "com.github.kneelawk.cpcontrol"
 
 task sourcesJar(type: Jar) {
